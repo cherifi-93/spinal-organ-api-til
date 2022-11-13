@@ -1,0 +1,41 @@
+{
+  "name": "spinal-organ-api-til",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node dist/index.js",
+    "build": "rm -rf dist/ && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cherifi-93/spinal-organ-api-til.git"
+  },
+  "keywords": [],
+  "author": "Salah-Eddine CHERIFI",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "json5": "^2.1.0",
+    "spinal-core-connectorjs": "git+https://github.com/spinalcom/spinal-core-connectorjs.git",
+    "spinal-core-connectorjs_type": "git+https://github.com/spinalcom/spinal-core-connectorjs_type.git",
+    "spinal-env-viewer-plugin-documentation": "git+https://github.com/spinalcom/spinal-env-viewer-plugin-documentation.git",
+    "spinal-env-viewer-plugin-documentation-service": "git+https://github.com/spinalcom/spinal-env-viewer-plugin-documentation-service.git",
+    "spinal-lib-forgefile": "git+https://github.com/spinalcom/spinal-lib-forgefile.git",
+    "spinal-model-bacnet": "git+https://github.com/spinalcom/spinal-model-bacnet.git",
+    "spinal-model-bmsnetwork": "git+https://github.com/spinalcom/spinal-model-bmsnetwork.git#bacnet",
+    "spinal-model-graph": "git+https://github.com/spinalcom/spinal-model-graph.git",
+    "spinal-model-timeseries": "git+https://github.com/spinalcom/spinal-model-timeseries.git",
+    "spinal-service-ticket": "git+https://github.com/spinalcom/spinal-service-ticket.git",
+    "typescript": "^4.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.38"
+  },
+  "bugs": {
+    "url": "https://github.com/cherifi-93/spinal-organ-api-til/issues"
+  },
+  "homepage": "https://github.com/cherifi-93/spinal-organ-api-til#readme"
+}
