@@ -37,23 +37,6 @@ declare class InputData {
      */
     setOnDataCBFunc(onData: onDataFunctionType): void;
     /**
-     * Run function, it is executed every "intervalTime" seconds
-     * and stops when an error is detected
-     *
-     * @return {*}  {Promise<void>}
-     * @memberof InputData
-     */
-    run(): Promise<void>;
-    /**
-       * Used by function run() to wait "nb" seconds
-       *
-       * @private
-       * @param {number} nb number of seconds
-       * @return {*}  {Promise<void>}
-       * @memberof Alarm
-       */
-    private waitFct;
-    /**
      * @private
      * @memberof InputData
      */

@@ -65,51 +65,6 @@ class InputData {
         this.onData = onData;
     }
     /**
-     * Run function, it is executed every "intervalTime" seconds
-     * and stops when an error is detected
-     *
-     * @return {*}  {Promise<void>}
-     * @memberof InputData
-     */
-    async run() {
-        this.running = true;
-        while (true) {
-            if (!this.running)
-                break;
-            const before = Date.now();
-            try {
-                this.generateData();
-                console.log("** DONE **");
-            }
-            catch (e) {
-                console.error(e);
-                this.running = false;
-                await this.waitFct(1000 * 60);
-                process.exit(0);
-            }
-            finally {
-                const delta = Date.now() - before;
-                const timeout = config.intervalTime - delta;
-                await this.waitFct(timeout);
-            }
-        }
-    }
-    /**
-       * Used by function run() to wait "nb" seconds
-       *
-       * @private
-       * @param {number} nb number of seconds
-       * @return {*}  {Promise<void>}
-       * @memberof Alarm
-       */
-    waitFct(nb) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, nb >= 0 ? nb : 0);
-        });
-    }
-    /**
      * @private
      * @memberof InputData
      */
@@ -149,9 +104,9 @@ class InputData {
             if (property.state != null) {
                 endPointObj = {
                     name: property.description,
-                    currentValue: 10,
+                    currentValue: property.state.message,
                     unit: '',
-                    dataType: InputDataModel_1.InputDataEndpointDataType.Double,
+                    dataType: InputDataModel_1.InputDataEndpointDataType.String,
                     type: InputDataModel_1.InputDataEndpointType.Other,
                     id: property.id,
                     path: '',

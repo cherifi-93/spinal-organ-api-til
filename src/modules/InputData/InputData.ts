@@ -95,55 +95,7 @@ class InputData {
   }
 
 
-  /**
-   * Run function, it is executed every "intervalTime" seconds
-   * and stops when an error is detected
-   *
-   * @return {*}  {Promise<void>}
-   * @memberof InputData
-   */
-  public async run(): Promise<void> {
-    this.running = true;
-    while(true){
-      if(!this.running) break;
-      const before = Date.now();
-      try{
-        this.generateData();
-        console.log("** DONE **");
-      } 
-      catch(e){
-        console.error(e);
-        this.running = false;
-        await this.waitFct(1000 * 60);
-        process.exit(0);
-      } 
-      finally {
-        const delta = Date.now() - before;
-        const timeout = config.intervalTime - delta;
-        await this.waitFct(timeout);
-      }
-    }
-}
-
-
-
-/**
-   * Used by function run() to wait "nb" seconds 
-   *
-   * @private
-   * @param {number} nb number of seconds
-   * @return {*}  {Promise<void>}
-   * @memberof Alarm
-   */
- private waitFct(nb: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-        resolve();
-      },
-      nb >= 0 ? nb : 0
-    );
-  });
-}
+ 
 
   /**
    * @private
