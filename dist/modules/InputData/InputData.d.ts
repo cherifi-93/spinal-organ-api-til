@@ -19,6 +19,7 @@ declare class InputData {
      * @memberof InputData
      */
     private devices;
+    running: boolean;
     private apiConnector;
     /**
      *Creates an instance of InputData.
@@ -36,6 +37,23 @@ declare class InputData {
      */
     setOnDataCBFunc(onData: onDataFunctionType): void;
     /**
+     * Run function, it is executed every "intervalTime" seconds
+     * and stops when an error is detected
+     *
+     * @return {*}  {Promise<void>}
+     * @memberof InputData
+     */
+    run(): Promise<void>;
+    /**
+       * Used by function run() to wait "nb" seconds
+       *
+       * @private
+       * @param {number} nb number of seconds
+       * @return {*}  {Promise<void>}
+       * @memberof Alarm
+       */
+    private waitFct;
+    /**
      * @private
      * @memberof InputData
      */
@@ -52,6 +70,6 @@ declare class InputData {
      * @returns {InputDataDevice}
      * @memberof InputData
      */
-    private getAndUpdateOneRandomDevice;
+    private getAndUpdateDevice;
 }
 export { InputData };

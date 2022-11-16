@@ -22,12 +22,13 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import { ForgeFileItem } from "spinal-lib-forgefile";
+// import { ForgeFileItem } from "spinal-lib-forgefile";
 import { InputData } from "./InputData/InputData";
 import { NetworkService } from "spinal-model-bmsnetwork";
 import { InputDataDevice } from "./InputData/InputDataModel/InputDataModel";
 
 import { ConfigOrgan } from "../Utils/ConfigOrgan";
+import { SpinalGraph } from "spinal-env-viewer-graph-service";
 
 /**
  *
@@ -46,23 +47,23 @@ export class NetworkProcess {
    */
   constructor(inputData: InputData) {
     this.inputData = inputData;
-    this.nwService = new NetworkService();
-    this.nwService.setupDelay(60000);
+    this.nwService = new NetworkService(true);
+    // this.nwService.setupDelay(0);
   }
 
   /**
    *
    *
-   * @param {ForgeFileItem} forgeFile
+   * @param {SpinalGraph} graph
    * @param {ConfigOrgan} configOrgan
    * @returns {Promise<void>}
    * @memberof NetworkProcess
    */
   public async init(
-    forgeFile: ForgeFileItem,
+    graph: SpinalGraph,
     configOrgan: ConfigOrgan
   ): Promise<void> {
-    await this.nwService.init(forgeFile, configOrgan);
+    await this.nwService.init(graph, configOrgan);
     this.inputData.setOnDataCBFunc(this.updateData.bind(this));
   }
 

@@ -56,7 +56,7 @@ class InputData {
    * @memberof InputData
    */
   private devices: InputDataDevice[];
-
+  running: boolean;
 
   private apiConnector: ApiConnector;
 
@@ -66,12 +66,13 @@ class InputData {
    * @memberof InputData
    */
   constructor( apiConnector: ApiConnector) {
-    const intervalTest = 2000;
+    const intervalTest = config.intervalTime;
     this.apiConnector = apiConnector;
     this.devices = [];
     this.onData = null;
     this.generateData();
-    // setInterval(this.onDataInterval.bind(this), intervalTest);
+    // this.running = false;
+    setInterval(this.onDataInterval.bind(this), intervalTest);
   }
 
   /**
@@ -80,7 +81,8 @@ class InputData {
    */
   private onDataInterval() {
     if (this.onData !== null) {
-      this.getAndUpdateOneRandomDevice();
+      this.getAndUpdateDevice();
+      console.log("** DONE **");
     }
   }
 
@@ -92,23 +94,69 @@ class InputData {
     this.onData = onData;
   }
 
+
+  /**
+   * Run function, it is executed every "intervalTime" seconds
+   * and stops when an error is detected
+   *
+   * @return {*}  {Promise<void>}
+   * @memberof InputData
+   */
+  public async run(): Promise<void> {
+    this.running = true;
+    while(true){
+      if(!this.running) break;
+      const before = Date.now();
+      try{
+        this.generateData();
+        console.log("** DONE **");
+      } 
+      catch(e){
+        console.error(e);
+        this.running = false;
+        await this.waitFct(1000 * 60);
+        process.exit(0);
+      } 
+      finally {
+        const delta = Date.now() - before;
+        const timeout = config.intervalTime - delta;
+        await this.waitFct(timeout);
+      }
+    }
+}
+
+
+
+/**
+   * Used by function run() to wait "nb" seconds 
+   *
+   * @private
+   * @param {number} nb number of seconds
+   * @return {*}  {Promise<void>}
+   * @memberof Alarm
+   */
+ private waitFct(nb: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve();
+      },
+      nb >= 0 ? nb : 0
+    );
+  });
+}
+
   /**
    * @private
    * @memberof InputData
    */
   private async generateData() {
     const fields = "all";
-    const response = await this.apiConnector.getAll(`https://${config.api_host}/api/objects?fields=${fields}`);
-    // const response = await this.apiConnector.getAll(`https://${config.api_host}/api/objects`);
-
-    console.log("response : ", response);
-
+    const response = await this.apiConnector.getAll(`https://${config.api_host}:${config.api_port}/api/objects?fields=${fields}`);
     const equipments = response.data.data;
-
+    
+    console.log("Start monitoring ......");
     for( const equipment of equipments){
       const device = await this.generateDataDevice(equipment);
-      // console.log("device : ", device);
-
       this.devices.push(device);
     }
     this.onDataInterval();
@@ -117,15 +165,9 @@ class InputData {
   private async getDeviceProperties(DeviceId: string) {
     // const fields = "description,id,name,properties";
     const fields = "all";
-
-    const response = await this.apiConnector.get(`https://${config.api_host}/api/objects/${DeviceId}?fields=${fields}`);
-
+    const response = await this.apiConnector.get(`https://${config.api_host}:${config.api_port}/api/objects/${DeviceId}?fields=${fields}`);
     const properties = response.data.properties;
-
-    console.log("properties : ", properties);
-
     return properties;
-    
   }
 
 
@@ -197,11 +239,8 @@ class InputData {
         endPointObj.id,
         endPointObj.path)
 
-        console.log("endpoint == ", endPoint)
-        device.children.push(endPoint);
+      device.children.push(endPoint);
     }
-
-
   
     return device;
   }
@@ -212,7 +251,7 @@ class InputData {
    * @returns {InputDataDevice}
    * @memberof InputData
    */
-  private getAndUpdateOneRandomDevice(): any {
+  private getAndUpdateDevice(): any {
     if (this.devices.length > 0) {
       for(let elt of this.devices){
         this.onData(elt);
@@ -222,37 +261,6 @@ class InputData {
 
   }
 
-
-  // static async create_Attributes(parentNode, tab, categoryName) {
-
-
-
-
-  //   let categoryAttributes = await AttributeService.addCategoryAttribute(parentNode, categoryName);
-
-  //   for (let elt2 in tab) {
-
-  //     if (typeof tab[elt2] != "object") {
-
-  //       AttributeService.addAttributeByCategory(parentNode, categoryAttributes, elt2, tab[elt2]);
-
-  //     }
-
-  //     else {
-
-
-
-
-  //       await DeviceHelper.create_Attributes(parentNode, tab[elt2], elt2);
-
-
-
-
-  //     }
-
-  //   }
-
-  // }
 }
 
 export { InputData };

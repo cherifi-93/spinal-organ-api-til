@@ -39,12 +39,13 @@ class InputData {
      * @memberof InputData
      */
     constructor(apiConnector) {
-        const intervalTest = 2000;
+        const intervalTest = config.intervalTime;
         this.apiConnector = apiConnector;
         this.devices = [];
         this.onData = null;
         this.generateData();
-        // setInterval(this.onDataInterval.bind(this), intervalTest);
+        // this.running = false;
+        setInterval(this.onDataInterval.bind(this), intervalTest);
     }
     /**
      * @private
@@ -52,7 +53,8 @@ class InputData {
      */
     onDataInterval() {
         if (this.onData !== null) {
-            this.getAndUpdateOneRandomDevice();
+            this.getAndUpdateDevice();
+            console.log("** DONE **");
         }
     }
     /**
@@ -63,18 +65,61 @@ class InputData {
         this.onData = onData;
     }
     /**
+     * Run function, it is executed every "intervalTime" seconds
+     * and stops when an error is detected
+     *
+     * @return {*}  {Promise<void>}
+     * @memberof InputData
+     */
+    async run() {
+        this.running = true;
+        while (true) {
+            if (!this.running)
+                break;
+            const before = Date.now();
+            try {
+                this.generateData();
+                console.log("** DONE **");
+            }
+            catch (e) {
+                console.error(e);
+                this.running = false;
+                await this.waitFct(1000 * 60);
+                process.exit(0);
+            }
+            finally {
+                const delta = Date.now() - before;
+                const timeout = config.intervalTime - delta;
+                await this.waitFct(timeout);
+            }
+        }
+    }
+    /**
+       * Used by function run() to wait "nb" seconds
+       *
+       * @private
+       * @param {number} nb number of seconds
+       * @return {*}  {Promise<void>}
+       * @memberof Alarm
+       */
+    waitFct(nb) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, nb >= 0 ? nb : 0);
+        });
+    }
+    /**
      * @private
      * @memberof InputData
      */
     async generateData() {
         const fields = "all";
-        const response = await this.apiConnector.getAll(`https://${config.api_host}/api/objects?fields=${fields}`);
-        // const response = await this.apiConnector.getAll(`https://${config.api_host}/api/objects`);
-        console.log("response : ", response);
+        const response = await this.apiConnector.getAll(`https://${config.api_host}:${config.api_port}/api/objects?fields=${fields}`);
         const equipments = response.data.data;
+        console.log("Start monitoring ......");
         for (const equipment of equipments) {
             const device = await this.generateDataDevice(equipment);
-            // console.log("device : ", device);
             this.devices.push(device);
         }
         this.onDataInterval();
@@ -82,9 +127,8 @@ class InputData {
     async getDeviceProperties(DeviceId) {
         // const fields = "description,id,name,properties";
         const fields = "all";
-        const response = await this.apiConnector.get(`https://${config.api_host}/api/objects/${DeviceId}?fields=${fields}`);
+        const response = await this.apiConnector.get(`https://${config.api_host}:${config.api_port}/api/objects/${DeviceId}?fields=${fields}`);
         const properties = response.data.properties;
-        console.log("properties : ", properties);
         return properties;
     }
     /**
@@ -105,9 +149,9 @@ class InputData {
             if (property.state != null) {
                 endPointObj = {
                     name: property.description,
-                    currentValue: property.state.message,
+                    currentValue: 10,
                     unit: '',
-                    dataType: InputDataModel_1.InputDataEndpointDataType.String,
+                    dataType: InputDataModel_1.InputDataEndpointDataType.Double,
                     type: InputDataModel_1.InputDataEndpointType.Other,
                     id: property.id,
                     path: '',
@@ -125,7 +169,6 @@ class InputData {
                 };
             }
             const endPoint = new InputDataModel_1.InputDataEndpoint(endPointObj.name, endPointObj.currentValue, endPointObj.unit, endPointObj.dataType, endPointObj.type, endPointObj.id, endPointObj.path);
-            console.log("endpoint == ", endPoint);
             device.children.push(endPoint);
         }
         return device;
@@ -135,7 +178,7 @@ class InputData {
      * @returns {InputDataDevice}
      * @memberof InputData
      */
-    getAndUpdateOneRandomDevice() {
+    getAndUpdateDevice() {
         if (this.devices.length > 0) {
             for (let elt of this.devices) {
                 this.onData(elt);

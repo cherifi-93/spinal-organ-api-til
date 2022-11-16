@@ -39,19 +39,19 @@ class NetworkProcess {
      */
     constructor(inputData) {
         this.inputData = inputData;
-        this.nwService = new spinal_model_bmsnetwork_1.NetworkService();
-        this.nwService.setupDelay(60000);
+        this.nwService = new spinal_model_bmsnetwork_1.NetworkService(true);
+        // this.nwService.setupDelay(0);
     }
     /**
      *
      *
-     * @param {ForgeFileItem} forgeFile
+     * @param {SpinalGraph} graph
      * @param {ConfigOrgan} configOrgan
      * @returns {Promise<void>}
      * @memberof NetworkProcess
      */
-    async init(forgeFile, configOrgan) {
-        await this.nwService.init(forgeFile, configOrgan);
+    async init(graph, configOrgan) {
+        await this.nwService.init(graph, configOrgan);
         this.inputData.setOnDataCBFunc(this.updateData.bind(this));
     }
     /**

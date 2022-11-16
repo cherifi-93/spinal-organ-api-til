@@ -1,7 +1,7 @@
-import { ForgeFileItem } from "spinal-lib-forgefile";
 import { InputData } from "./InputData/InputData";
 import { InputDataDevice } from "./InputData/InputDataModel/InputDataModel";
 import { ConfigOrgan } from "../Utils/ConfigOrgan";
+import { SpinalGraph } from "spinal-env-viewer-graph-service";
 /**
  *
  *
@@ -20,12 +20,12 @@ export declare class NetworkProcess {
     /**
      *
      *
-     * @param {ForgeFileItem} forgeFile
+     * @param {SpinalGraph} graph
      * @param {ConfigOrgan} configOrgan
      * @returns {Promise<void>}
      * @memberof NetworkProcess
      */
-    init(forgeFile: ForgeFileItem, configOrgan: ConfigOrgan): Promise<void>;
+    init(graph: SpinalGraph, configOrgan: ConfigOrgan): Promise<void>;
     /**
      *
      *

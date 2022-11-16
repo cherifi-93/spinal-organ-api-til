@@ -23,7 +23,6 @@ export declare class InputDataEndpoint implements idEndpoint {
     type: InputDataEndpointType;
     nodeTypeName: string;
     timeseries: any[];
-    idx: number;
     typeId: string;
     /**
      *Creates an instance of InputDataEndpoint.

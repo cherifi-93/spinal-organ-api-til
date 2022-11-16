@@ -39,6 +39,8 @@ module.exports = {
   api_key : process.env.TIL_API_KEY,
   digitalTwinPath: process.env.DIGITALTWIN_PATH,
   api_host: process.env.TIL_API_HOST,
+  api_port: process.env.TIL_API_PORT,
+  intervalTime : process.env.INTERVAL_TIME,
   organ:{
     contextName: process.env.ORGAN_CONTEXT_NAME,
     contextType: process.env.ORGAN_CONTEXT_TYPE,
